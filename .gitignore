@@ -1,0 +1,17 @@
+node_modules/
+npm-debug.log
+.env
+.env.local
+.env.*.local
+dist/
+build/
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+dados/*.json
+!dados/example-data.json
+exports/
+graficos/
