@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Analisador Estatístico da Copa</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>⚽ Analisador Estatístico da Copa</h1>
+                <p>Análise completa de desempenho das seleções</p>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <div class="container">
+            <button class="nav-btn active" data-section="dashboard">📊 Dashboard</button>
+            <button class="nav-btn" data-section="games">🎮 Jogos</button>
+            <button class="nav-btn" data-section="statistics">📈 Estatísticas</button>
+            <button class="nav-btn" data-section="charts">📉 Gráficos</button>
+            <button class="nav-btn" data-section="import">📥 Importar</button>
+        </div>
+    </nav>
+
+    <main class="container main-content">
+        <section id="dashboard" class="section active">
+            <div class="dashboard-header">
+                <h2>Dashboard</h2>
+                <div class="filters">
+                    <select id="copaFilter" class="filter-select">
+                        <option value="">Todas as Copas</option>
+                    </select>
+                    <input type="text" id="searchTeam" class="search-input" placeholder="Buscar seleção...">
+                </div>
+            </div>
+            <div id="statsCards" class="stats-grid"></div>
+            <div class="ranking-section">
+                <h3>🏆 Classificação Geral</h3>
+                <div class="table-wrapper">
+                    <table id="rankingTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Posição</th>
+                                <th>Seleção</th>
+                                <th>PG</th>
+                                <th>V</th>
+                                <th>E</th>
+                                <th>D</th>
+                                <th>GP</th>
+                                <th>GC</th>
+                                <th>SG</th>
+                                <th>Pts</th>
+                                <th>AP%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="games" class="section">
+            <div class="section-header">
+                <h2>Gerenciar Jogos</h2>
+                <button id="addGameBtn" class="btn btn-primary">➕ Novo Jogo</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="gamesTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Rodada</th>
+                            <th>Mandante</th>
+                            <th>Visitante</th>
+                            <th>Placar</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gamesBody"></tbody>
+                </table>
+            </div>
+            <div id="addGameModal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Adicionar Novo Jogo</h3>
+                        <button class="close-btn" data-modal="addGameModal">&times;</button>
+                    </div>
+                    <form id="addGameForm">
+                        <div class="form-group">
+                            <label for="gameCopa">Copa:</label>
+                            <input type="text" id="gameCopa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gameData">Data:</label>
+                            <input type="date" id="gameData" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gameRodada">Rodada:</label>
+                            <input type="number" id="gameRodada" min="1" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gameMandante">Time Mandante:</label>
+                                <input type="text" id="gameMandante" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gameVisitante">Time Visitante:</label>
+                                <input type="text" id="gameVisitante" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gameGolsMandante">Gols Mandante:</label>
+                                <input type="number" id="gameGolsMandante" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gameGolsVisitante">Gols Visitante:</label>
+                                <input type="number" id="gameGolsVisitante" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Salvar Jogo</button>
+                            <button type="button" class="btn btn-secondary" data-modal="addGameModal">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="statistics" class="section">
+            <div class="section-header">
+                <h2>Estatísticas Detalhadas</h2>
+                <div class="filters">
+                    <select id="statsTeamFilter" class="filter-select">
+                        <option value="">Selecionar Seleção</option>
+                    </select>
+                </div>
+            </div>
+            <div id="teamStatsDetail" class="stats-detail hidden">
+                <div class="stats-grid-detail">
+                    <div class="stat-box"><h4>Jogos Disputados</h4><p id="statJogosDisputados" class="stat-value">0</p></div>
+                    <div class="stat-box"><h4>Vitórias</h4><p id="statVitorias" class="stat-value success">0</p></div>
+                    <div class="stat-box"><h4>Empates</h4><p id="statEmpates" class="stat-value warning">0</p></div>
+                    <div class="stat-box"><h4>Derrotas</h4><p id="statDerrotas" class="stat-value danger">0</p></div>
+                    <div class="stat-box"><h4>Gols Marcados</h4><p id="statGolsMarcados" class="stat-value">0</p></div>
+                    <div class="stat-box"><h4>Gols Sofridos</h4><p id="statGolsSofridos" class="stat-value">0</p></div>
+                    <div class="stat-box"><h4>Saldo de Gols</h4><p id="statSaldoGols" class="stat-value">0</p></div>
+                    <div class="stat-box"><h4>Pontos</h4><p id="statPontos" class="stat-value primary">0</p></div>
+                    <div class="stat-box"><h4>Aproveitamento</h4><p id="statAproveitamento" class="stat-value">0%</p></div>
+                    <div class="stat-box"><h4>Média de Gols</h4><p id="statMediaGols" class="stat-value">0</p></div>
+                    <div class="stat-box full-width"><h4>Últimos 5 Resultados</h4><p id="statUltimos5" class="stat-badges">-</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="charts" class="section">
+            <div class="section-header">
+                <h2>Gráficos de Desempenho</h2>
+                <div class="filters">
+                    <select id="chartsTeamFilter" class="filter-select">
+                        <option value="">Selecionar Seleção</option>
+                    </select>
+                    <button id="exportChartsBtn" class="btn btn-secondary">📊 Exportar Gráficos</button>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-container"><h3>Evolução de Pontos por Rodada</h3><canvas id="pontosChart"></canvas></div>
+                <div class="chart-container"><h3>Evolução do Saldo de Gols</h3><canvas id="saldoChart"></canvas></div>
+                <div class="chart-container"><h3>Sinal de Desempenho</h3><canvas id="sinaldChart"></canvas></div>
+                <div class="chart-container"><h3>Tendência Acumulada</h3><canvas id="tendenciaChart"></canvas></div>
+            </div>
+        </section>
+
+        <section id="import" class="section">
+            <div class="section-header"><h2>Importar e Exportar Dados</h2></div>
+            <div class="import-export-grid">
+                <div class="import-card">
+                    <h3>📄 Importar CSV</h3>
+                    <p>Carregue um arquivo CSV com os dados dos jogos</p>
+                    <div class="form-group">
+                        <label for="csvFile">Selecione arquivo CSV:</label>
+                        <input type="file" id="csvFile" accept=".csv" class="file-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="csvCopa">Copa (opcional):</label>
+                        <input type="text" id="csvCopa" placeholder="Ex: Copa América 2024">
+                    </div>
+                    <button id="importCsvBtn" class="btn btn-primary">Importar CSV</button>
+                </div>
+                <div class="import-card">
+                    <h3>📋 Importar JSON</h3>
+                    <p>Carregue um arquivo JSON com os dados dos jogos</p>
+                    <div class="form-group">
+                        <label for="jsonFile">Selecione arquivo JSON:</label>
+                        <input type="file" id="jsonFile" accept=".json" class="file-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="jsonCopa">Copa (opcional):</label>
+                        <input type="text" id="jsonCopa" placeholder="Ex: Copa América 2024">
+                    </div>
+                    <button id="importJsonBtn" class="btn btn-primary">Importar JSON</button>
+                </div>
+                <div class="import-card">
+                    <h3>📥 Exportar CSV</h3>
+                    <p>Baixe as estatísticas em formato CSV</p>
+                    <button id="exportCsvBtn" class="btn btn-secondary">Exportar CSV</button>
+                </div>
+                <div class="import-card">
+                    <h3>📥 Exportar JSON</h3>
+                    <p>Baixe as estatísticas em formato JSON</p>
+                    <button id="exportJsonBtn" class="btn btn-secondary">Exportar JSON</button>
+                </div>
+            </div>
+            <div id="importPreview" class="import-preview hidden">
+                <h3>Preview dos Dados</h3>
+                <div id="previewContent"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Analisador Estatístico da Copa | Desenvolvido com ❤️</p>
+    </footer>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="js/app.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/upload.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/filters.js"></script>
+</body>
+</html>
